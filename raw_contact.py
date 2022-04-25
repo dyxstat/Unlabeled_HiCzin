@@ -413,7 +413,7 @@ class ContactMatrix:
             for i in self.valid_contact:
                 out.write(str(i[0]) + ',' + str(i[1]) + ',' + str(i[2]))
                 out.write('\n')      
-        del self.must_contact
+
 
     def max_offdiag(self):
         """
