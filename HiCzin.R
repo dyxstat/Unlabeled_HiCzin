@@ -57,7 +57,7 @@ HiCzin = function(contig_info_file , valid_contact_file , thres)
       {
         
         fit1 = glmmTMB(sampleCon~sample_site+sample_len+sample_cov, data = data_sample,
-                       ziformula=0 , family=nbinom2)
+                       ziformula=~0 , family=nbinom2)
         
       },
       error = function(e){
