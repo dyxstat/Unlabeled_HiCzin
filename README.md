@@ -1,12 +1,4 @@
-# HiCzin: Normalizing metagenomic Hi-C data and detecting spurious contacts using zero-inflated negative binomial regression
-
-
-Please refer to the folder 'RECOMB paper related materials' for supplementary materials, datasets and codes in our HiCzin RECOMB paper (Yuxuan Du, Sarah M. Laperriere, Jed Fuhrman, and Fengzhu Sun. Journal of Computational Biology. 2022 http://doi.org/10.1089/cmb.2021.0439).
-
-
-
-## HiCzin: Normalizing metagenomic Hi-C data and detecting spurious contacts
-HiCzin is a normalization method designed for metagenomic Hi-C data. HiCzin is based on the zero-inflated negative binomial regression frameworks. We model the population of the intra-species contacts using the negative binomial distribution. HiCzin combines the counting distribution of the intra-species contacts with a mass distribution of unobserved contacts. The residues of the counting part serve as normalized contacts. HiCzin can also be used to detect and remove spurious contacts.
+# Unlabeled_HiCzin
 
 ## Install and Setup
 ### conda
@@ -57,10 +49,8 @@ bwa mem -5SP final.contigs.fa hic_read1.fastq.gz hic_read2.fastq.gz > MAP.sam
 samtools view -F 0x904 -bS MAP.sam > MAP_UNSORTED.bam
 samtools sort -n MAP_UNSORTED.bam -o MAP_SORTED.bam
 ```
-### 3.Assign taxonomy to contigs by TAXAassign
-The taxonomic assignment of contigs was resolved using NCBI’s Taxonomy and its nt database by [TAXAassign(v0.4)](https://github.com/umerijaz/TAXAassign) with parameters ‘-p -c 20 -r 10 -m 98 -q 98 -t 95 -a “60,70,80,95,95,98” -f’. 
 
-### 4.Calculate the coverage of assembled contigs
+### 3.Calculate the coverage of assembled contigs
 Firstly, BBmap from the BBTools suite is applied to map the shotgun reads to the assembled contigs with parameters ‘bamscript=bs.sh; sh bs.sh’. The coverage of contigs is computed using script: ‘jgi summarize bam contig depths’ from MetaBAT2 v2.12.1.
 ```
 bbmap.sh in1=SG1.fastq.gz in2=SG2.fastq.gz ref=final.contigs.fa out=SG_map.sam bamscript=bs.sh; sh bs.sh
@@ -70,7 +60,7 @@ jgi_summarize_bam_contig_depths --outputDepth coverage.txt --pairedContigs pair.
 ## Usage
 ### Implement the HiCzin normalization
 ```
-python ./hiczin.py norm [Parameters] FASTA_file BAM_file TAX_file COV_file OUTPUT_directory
+python ./hiczin.py norm [Parameters] FASTA_file BAM_file COV_file OUTPUT_directory
 ```
 #### Parameters
 ```
@@ -87,17 +77,12 @@ python ./hiczin.py norm [Parameters] FASTA_file BAM_file TAX_file COV_file OUTPU
 
 * **FASTA_file**: a fasta file of the assembled contig (e.g. final.contigs.fa)
 * **BAM_file**: a bam file of the Hi-C alignment (e.g. MAP_SORTED.bam)
-* **TAX_file**: a csv file of contigs' taxonomy assignment by TAXAassign (e.g. contig_tax.csv)
 * **COV_file**: a txt file of contigs' coverage information computed by script: ‘jgi summarize bam contig depths’ from MetaBAT2 (e.g. depth.txt)
 
 
 #### Example
 ```
-python ./hiczin.py pipeline -e HindIII -e NcoI -v final.contigs.fa MAP_SORTED.bam contig_tax.csv depth.txt out
-```
-If the restriction enzymes employed in the experiment are unspecified, use
-```
-python ./hiczin.py pipeline -v final.contigs.fa MAP_SORTED.bam contig_tax.csv depth.txt out
+python ./hiczin.py norm -e HindIII -e NcoI -v final.contigs.fa MAP_SORTED.bam depth.txt out
 ```
 
 
@@ -108,7 +93,7 @@ All outputs of HiCzin normalization pipeline are located in the OUT_directory yo
 * **contig_info.csv**: information of contigs, containing four columns (contigs' name, the number of restriction sites on contigs, contigs' length 
 and coverage) or three columns (contigs' name, length and coverage)
 * **Normalized_contact_matrix.npz**: a sparse matrix of normlized Hi-C contact maps in csr format and can be reloaded using **scipy.sparse.load_npz('Normalized_contact_matrix.npz')**
-* **valid_contact.csv**: information of valid intra-species contacts, containing three columns (index of the first contig, index of the second contig, and value of raw valid  intra-species contacts)
+* **valid_contact.csv**: information of valid contacts, containing three columns (index of the first contig, index of the second contig, and value of raw valid  intra-species contacts)
 * **HiCzin_normalized_contact.gz**: Compressed format of the normalized contacts and contig information by pickle. This file can further serve as the input of [**HiCBin**](https://github.com/dyxstat/HiCBin) and [**HiFine**](https://github.com/dyxstat/HiFine).
 
 
