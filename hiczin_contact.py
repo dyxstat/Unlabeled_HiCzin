@@ -24,7 +24,6 @@ class HiCzinMap:
         self.site = []
         self.len = []
         self.cov = []
-        self.tax = []
 
         for i in range(len(contig_info)):
             temp = contig_info[i]
@@ -32,7 +31,6 @@ class HiCzinMap:
             self.site.append(temp.sites)
             self.len.append(temp.length)
             self.cov.append(temp.cov)
-            self.tax.append(temp.tax)
 
         del contig_info
 
@@ -40,7 +38,6 @@ class HiCzinMap:
         self.site = np.array(self.site)
         self.len = np.array(self.len)
         self.cov = np.array(self.cov)
-        self.tax= np.array(self.tax)
         
         self.cov[self.cov==0] = np.min(self.cov[self.cov!=0])
         
